@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+
+{% block title %}Home{% endblock %}
+
+{% block messages %}
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        {% for message in messages %}
+            {% set display = slice(message, "1:") %}
+            {% set prefix = slice[0] %}
+            {% if prefix == "R" %}
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    {{ display }}
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+            {% else %}
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    {{ display }}
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+            {% endif %}
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+{% endblock %}
+
+{% block content %}
+{{ step }}
+<div class="container">
+    <div class="row" id="images-div">
+        <div class="col justify-content-center">
+
+            <img src="{{ url_for('static', filename=content_image) }}" style="width:300px;height:300px;" class="rounded img-thumbnail image-fluid" alt="..." id="content-img">
+            <div class="image-label">
+                <button type="button" id="content-btn" class="btn btn-secondary" title="Upload a content image.">Upload Content</button>
+            </div>
+        </div>
+        <div class="col">
+            <img src="{{ url_for('static', filename=style_image) }}" style="width:300px;height:300px;"class="rounded img-thumbnail image-fluid" alt="..." id="style-img">
+            <div class="image-label">
+                <button type="button" id="style-btn" class="btn btn-secondary" title="Upload a style image.">Upload Style</button>
+            </div>
+        </div>
+        <div class="col">
+            <img src="{{ url_for('static', filename=output_image) }}" style="width:300px;height:300px;" class="img-thumbnail rounded image-fluid" alt="..." id="output-img">
+            <div class="image-label">
+                <button style="margin:auto;" type="button" class="btn btn-success" title="Download your output.">Download Output</button>
+            </div>
+        </div>
+    </div>
+    <h3 style="text-align: center; padding-top: 40px;padding-bottom: 10px; padding-right: 4%;">Model Settings</h3>
+    <form id="settings" method="post" class="justify-content-center">
+        <div class="row" >
+            <div class='col justify-content-center'>
+                <b><label for="variance" >Image Variance</label></b>
+                <input type="range" style="float: left; width:88%; padding-right: 10px;" onchange="document.getElementById('varianceVal').innerHTML=this.value;"  class="custom-range" name="variance" id="variance" value=20 min=1 max=100>
+                <b><p id="varianceVal">20</p></b>
+                
+                <!--<b><label for="lr">Learning Rate</label></b>
+                <input type="range" style="float: left; width:88%; padding-right: 10px;" onchange="document.getElementById('lrVal').innerHTML=this.value;" class="custom-range" id="lr">
+                <b><p id="lrVal">0</p></b>-->
+
+                <b><label for="steps"># Of Steps</label></b>
+                <input type="range" style="float:left; width:88%; padding-right: 10px;" onchange="document.getElementById('stepsVal').innerHTML=this.value;" class="custom-range" name="steps" id="steps" min=10 value=10 max=2000>
+                <b><p id="stepsVal">10</p></b>
+            </div> 
+            <div class='col'>
+                <b><label for="style" >Style Weight (%)</label></b>
+                <input type="range" style="float: left; width:88%; padding-right: 10px;" onchange="document.getElementById('styleVal').innerHTML=this.value + '%';"  class="custom-range" name="style" id="style" value=50 min=0 max=100>
+                <b><p id="styleVal">50%</p></b>
+                
+                <b><label for="content">Content Weight (%)</label></b>
+                <input type="range" style="float: left; width:88%; padding-right: 10px;" onchange="document.getElementById('contentVal').innerHTML=this.value + '%';" class="custom-range" name="content" id="content" value=50 min=0 max=100>
+                <b><p id="contentVal">50%</p></b>
+   
+            </div>   
+        </div>
+        <div class="row justify-content-center" style="padding-top: 15px; padding-right: 4%;">
+            <button type="button" class="btn btn-primary btn-lg" onclick="generate()">Generate Image</button>
+        </div> 
+    </form>
+</div>
+
+
+<form method=post enctype=multipart/form-data>
+    <input type="file" onchange="form.submit()" name="content_file" id="content-upload" style="display:none"/> 
+    <input type="file" onchange="form.submit()" name="style_file" id="style-upload" style="display:none"/>
+</form>
+
+
+{% endblock %}
+
